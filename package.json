@@ -1,0 +1,41 @@
+{
+  "name": "aegis-command-c4isr-digital-twin",
+  "version": "2.4.0",
+  "description": "Enterprise C4ISR Joint Operations Center Digital Twin — STANAG 5516 Link-16 J-Series Data Link, Multi-Hypothesis Kalman Sensor Fusion (JPDA/MHT), and TEWA Patriot PAC-3 Engagement Optimization",
+  "type": "module",
+  "author": "Eng. Tareq Aboushi <Tareq0001>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "vite --port 5173 --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "build:cpp": "g++ -std=c++17 -O3 -mavx2 -shared -fPIC cpp_core/kalman_track_fusion.cpp -o cpp_core/build/libkalman_fusion.so",
+    "sitl:node": "python python_c2/c4isr_sitl_node.py"
+  },
+  "dependencies": {
+    "three": "^0.128.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.128.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vitest": "^1.6.0"
+  },
+  "keywords": [
+    "c4isr",
+    "digital-twin",
+    "link-16",
+    "stanag-5516",
+    "mil-std-2525d",
+    "kalman-filter",
+    "multi-hypothesis-tracking",
+    "jpda",
+    "tewa",
+    "air-defense",
+    "wgs84"
+  ]
+}

@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AegisCommand C4ISR — Joint Situational Awareness & Theater Command Twin</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js & OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- FontAwesome -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Tajawal:wght@500;700;800&display=swap');
@@ -24,7 +24,6 @@
 
         .font-chakra { font-family: 'Chakra Petch', sans-serif; }
 
-        /* Tactical Command Styling */
         .glass-c4isr {
             background: rgba(10, 15, 30, 0.88);
             backdrop-filter: blur(14px);
@@ -38,7 +37,6 @@
             pointer-events: none;
         }
 
-        /* Tactical Pulse */
         @keyframes pulse-radar {
             0% { transform: scale(0.9); opacity: 0.8; }
             50% { transform: scale(1.05); opacity: 0.3; }
@@ -62,7 +60,7 @@
             <div>
                 <div class="flex items-center space-x-2 rtl:space-x-reverse">
                     <span class="font-chakra font-bold text-base md:text-lg tracking-wider text-sky-400">AEGIS<span class="text-white">COMMAND</span> <span class="text-xs text-amber-400 font-mono">[C4ISR TWIN]</span></span>
-                    <span class="hidden md:inline-block px-2 py-0.5 text-[9px] font-bold bg-sky-950 text-sky-300 border border-sky-700/60 rounded">MIL-STD-2525D // STANAG 4586</span>
+                    <span class="hidden md:inline-block px-2 py-0.5 text-[9px] font-bold bg-sky-950 text-sky-300 border border-sky-700/60 rounded">MIL-STD-2525D // STANAG 5516 LINK-16</span>
                 </div>
                 <p class="text-[9px] text-slate-400 -mt-1 hidden sm:block" id="subHeaderDesc">Joint Operations Command, Common Operational Picture (COP) & Multi-Domain Sensor Fusion</p>
             </div>
@@ -95,20 +93,16 @@
 
         <!-- Right Quick Controls -->
         <div class="flex items-center space-x-2 rtl:space-x-reverse">
-            <!-- Alert Level Toggle -->
             <button id="alertBtn" class="px-2.5 py-1 text-xs font-bold rounded bg-rose-950/80 border border-rose-600/60 hover:bg-rose-900 text-rose-300 transition flex items-center space-x-1" title="Trigger Theater Air Defense Alert">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 <span id="txtAlert">DEFCON 2 ALERT</span>
             </button>
-            <!-- Audio Toggle -->
             <button id="soundBtn" class="p-1.5 rounded bg-slate-900 border border-slate-700 hover:border-sky-500 text-slate-400 hover:text-sky-400 transition" title="Ops Room Comms & Sonar Audio">
                 <i class="fa-solid fa-volume-high" id="soundIcon"></i>
             </button>
-            <!-- Reset View -->
             <button id="resetCamBtn" class="p-1.5 rounded bg-slate-900 border border-slate-700 hover:border-sky-500 text-slate-400 hover:text-sky-400 transition" title="Reset Theater Orbit">
                 <i class="fa-solid fa-arrows-rotate"></i>
             </button>
-            <!-- Language Toggle -->
             <button id="langToggleBtn" class="px-2.5 py-1 text-xs font-bold rounded bg-sky-950 border border-sky-600/60 text-sky-300 hover:bg-sky-900 transition">
                 عربي
             </button>
@@ -241,431 +235,7 @@
 
     </div>
 
-    <!-- C4ISR Logic & 3D Sandtable Script -->
-    <script>
-        const I18N = {
-            en: {
-                subDesc: "Joint Operations Command, Common Operational Picture (COP) & Multi-Domain Sensor Fusion",
-                defconNormal: "DEFCON 4 (NORMAL)",
-                defconAlert: "DEFCON 2 (ARMED DEFENSE)",
-                btnAlert: "DEFCON 2 ALERT",
-                btnResetAlert: "STAND DOWN TO DEFCON 4",
-                allDomains: "Joint All-Domain",
-                airDomain: "Air Defense",
-                seaDomain: "Maritime Coastal",
-                spaceDomain: "Space & ISR Sat",
-                radarTitle: "RADAR & AIR CORRIDOR COP",
-                interceptorTitle: "AIR DEFENSE INTERCEPT CALCULATOR",
-                engageBtn: "AUTHORIZE PATRIOT INTERCEPT",
-                engagedBtn: "INTERCEPTOR LAUNCHED (IN FLIGHT)",
-                logTitle: "C4ISR SEQUENCE OF EVENTS"
-            },
-            ar: {
-                subDesc: "مركز القيادة والسيطرة المشتركة، الصورة العملياتية الموحدة (COP) ودمج حساسات مسرح العمليات",
-                defconNormal: "الحالة 4 (جاهزية طبيعية)",
-                defconAlert: "الحالة 2 (تأهب دفاعي شامل)",
-                btnAlert: "إعلان حالة التأهب 2",
-                btnResetAlert: "خفض التأهب للحالة 4",
-                allDomains: "كافة مسارح العمليات",
-                airDomain: "الدفاع الجوي",
-                seaDomain: "الأسطول البحري والساحلي",
-                spaceDomain: "الأقمار الاصطناعية والفضاء",
-                radarTitle: "رادار المراقبة الجوية المشتركة",
-                interceptorTitle: "حاسبة الاعتراض والدفاع الجوي",
-                engageBtn: "تفويض إطلاق صاروخ باتريوت",
-                engagedBtn: "تم الإطلاق وجارٍ الاعتراض",
-                logTitle: "سجل الأحداث والبرقيات العملياتية"
-            }
-        };
-
-        let currentLang = 'en';
-
-        // Sound Synthesis (Web Audio API)
-        let audioCtx = null;
-        let isAudioMuted = true;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playAlertSound() {
-            if (isAudioMuted || !audioCtx) return;
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(800, now);
-            osc.frequency.setValueAtTime(400, now + 0.2);
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.4);
-        }
-
-        // Three.js 3D Holographic Sandtable
-        let scene, camera, renderer, controls;
-        let theaterGroup, airGroup, seaGroup, spaceGroup, samGroup;
-        let airTracks = [], hostileTracks = [];
-
-        function initThree() {
-            const container = document.getElementById('threeContainer');
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x020617);
-            scene.fog = new THREE.FogExp2(0x020617, 0.006);
-
-            camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 3000);
-            camera.position.set(0, 70, 90);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
-            container.appendChild(renderer.domElement);
-
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.maxPolarAngle = Math.PI / 2 - 0.05;
-
-            // Ambient & Key Light
-            const ambient = new THREE.AmbientLight(0x38bdf8, 0.6);
-            scene.add(ambient);
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
-            dirLight.position.set(50, 120, 50);
-            scene.add(dirLight);
-
-            // Ground Tactical Hologram Grid
-            const gridHelper = new THREE.GridHelper(200, 40, 0x0284c7, 0x0f172a);
-            gridHelper.position.y = 0;
-            scene.add(gridHelper);
-
-            // Groups
-            theaterGroup = new THREE.Group();
-            airGroup = new THREE.Group();
-            seaGroup = new THREE.Group();
-            spaceGroup = new THREE.Group();
-            samGroup = new THREE.Group();
-
-            theaterGroup.add(airGroup);
-            theaterGroup.add(seaGroup);
-            theaterGroup.add(spaceGroup);
-            theaterGroup.add(samGroup);
-            scene.add(theaterGroup);
-
-            buildAirDefenseDome();
-            buildMaritimeFleet();
-            buildAirTracks();
-            buildSpaceOrbit();
-
-            window.addEventListener('resize', onWindowResize);
-            animate();
-        }
-
-        // SAM Umbrella (Patriot PAC-3 Coverage Domes)
-        function buildAirDefenseDome() {
-            // SAM Base 1: Patriot Battery
-            const batteryMesh = new THREE.Mesh(new THREE.BoxGeometry(4, 1.5, 6), new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8 }));
-            batteryMesh.position.set(-20, 0.75, 10);
-            samGroup.add(batteryMesh);
-
-            // Interception Dome (Transparent Blue Wireframe)
-            const domeGeo = new THREE.SphereGeometry(38, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-            const domeMat = new THREE.MeshBasicMaterial({ color: 0x0284c7, wireframe: true, transparent: true, opacity: 0.25 });
-            const dome = new THREE.Mesh(domeGeo, domeMat);
-            dome.position.copy(batteryMesh.position);
-            dome.position.y = 0;
-            samGroup.add(dome);
-        }
-
-        // Maritime Coastal Fleet
-        function buildMaritimeFleet() {
-            const shipMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7 });
-            const frigateCoords = [
-                { x: 30, z: -35 },
-                { x: 55, z: -20 },
-                { x: 45, z: 15 }
-            ];
-
-            frigateCoords.forEach(c => {
-                const hull = new THREE.Mesh(new THREE.BoxGeometry(3, 1.8, 10), shipMat);
-                hull.position.set(c.x, 0.9, c.z);
-                seaGroup.add(hull);
-
-                // Mast
-                const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 4), shipMat);
-                mast.position.set(c.x, 3.5, c.z);
-                seaGroup.add(mast);
-            });
-        }
-
-        // Air Fighter Tracks (Blue force F-15s & Red force cruise vectors)
-        function buildAirTracks() {
-            const fighterMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
-            const hostileMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
-
-            // Blue Fighters
-            for (let i = 0; i < 4; i++) {
-                const jet = new THREE.Mesh(new THREE.ConeGeometry(0.8, 3, 6), fighterMat);
-                jet.rotation.x = Math.PI / 2;
-                jet.position.set(-40 + i * 25, 20 + i * 4, -20 + i * 15);
-                airGroup.add(jet);
-                airTracks.push({ mesh: jet, speed: 0.12 + i * 0.03, radius: 25 + i * 8, angle: i * 1.5 });
-            }
-
-            // Hostile Cruise Vector (RED-01)
-            const hostile = new THREE.Mesh(new THREE.ConeGeometry(0.6, 2.5, 6), hostileMat);
-            hostile.rotation.x = Math.PI / 2;
-            hostile.position.set(60, 25, -60);
-            airGroup.add(hostile);
-            hostileTracks.push({ mesh: hostile, speed: 0.22, dir: new THREE.Vector3(-0.6, 0, 0.6).normalize() });
-        }
-
-        // Recon Satellite Space Orbit
-        function buildSpaceOrbit() {
-            const satMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.9 });
-            const sat = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), satMat);
-            sat.position.set(0, 55, 0);
-
-            // Solar Panels
-            const panelMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8 });
-            const leftPanel = new THREE.Mesh(new THREE.BoxGeometry(4, 0.1, 1.5), panelMat);
-            leftPanel.position.set(-3.5, 0, 0);
-            const rightPanel = new THREE.Mesh(new THREE.BoxGeometry(4, 0.1, 1.5), panelMat);
-            rightPanel.position.set(3.5, 0, 0);
-            sat.add(leftPanel);
-            sat.add(rightPanel);
-
-            spaceGroup.add(sat);
-
-            // Orbit Ring
-            const orbitCurve = new THREE.EllipseCurve(0, 0, 65, 45, 0, 2 * Math.PI, false, 0);
-            const points = orbitCurve.getPoints(50);
-            const orbitGeo = new THREE.BufferGeometry().setFromPoints(points);
-            const orbitLine = new THREE.Line(orbitGeo, new THREE.LineBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.3 }));
-            orbitLine.rotation.x = Math.PI / 2;
-            orbitLine.position.y = 55;
-            spaceGroup.add(orbitLine);
-        }
-
-        function onWindowResize() {
-            const container = document.getElementById('threeContainer');
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        }
-
-        // 2D Tactical COP Radar Canvas
-        const radarCanvas = document.getElementById('copRadarCanvas');
-        const rCtx = radarCanvas.getContext('2d');
-        let sweepAngle = 0;
-
-        function drawCopRadar() {
-            rCtx.fillStyle = 'rgba(2, 6, 23, 0.15)';
-            rCtx.fillRect(0, 0, radarCanvas.width, radarCanvas.height);
-
-            const cx = radarCanvas.width / 2;
-            const cy = radarCanvas.height / 2;
-            const maxR = radarCanvas.height / 2 - 5;
-
-            // Range Rings
-            rCtx.strokeStyle = 'rgba(14, 165, 233, 0.2)';
-            rCtx.lineWidth = 1;
-            for (let r = 25; r <= maxR; r += 25) {
-                rCtx.beginPath();
-                rCtx.arc(cx, cy, r, 0, Math.PI * 2);
-                rCtx.stroke();
-            }
-
-            // Sweep Line
-            sweepAngle += 0.04;
-            const sweepX = cx + Math.cos(sweepAngle) * maxR;
-            const sweepY = cy + Math.sin(sweepAngle) * maxR;
-
-            rCtx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
-            rCtx.lineWidth = 1.5;
-            rCtx.beginPath();
-            rCtx.moveTo(cx, cy);
-            rCtx.lineTo(sweepX, sweepY);
-            rCtx.stroke();
-
-            // Blue tracks
-            rCtx.fillStyle = '#38bdf8';
-            airTracks.forEach(t => {
-                const tx = cx + (t.mesh.position.x / 100) * (maxR - 10);
-                const ty = cy + (t.mesh.position.z / 100) * (maxR - 10);
-                rCtx.beginPath();
-                rCtx.arc(tx, ty, 3, 0, Math.PI * 2);
-                rCtx.fill();
-            });
-
-            // Red Hostile Track
-            rCtx.fillStyle = '#ef4444';
-            hostileTracks.forEach(h => {
-                const hx = cx + (h.mesh.position.x / 100) * (maxR - 10);
-                const hy = cy + (h.mesh.position.z / 100) * (maxR - 10);
-                rCtx.beginPath();
-                rCtx.arc(hx, hy, 4, 0, Math.PI * 2);
-                rCtx.fill();
-            });
-        }
-
-        // Animation Loop
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-
-            // Animate Blue Air Patrols (Circling)
-            airTracks.forEach(t => {
-                t.angle += t.speed * 0.05;
-                t.mesh.position.x = Math.sin(t.angle) * t.radius;
-                t.mesh.position.z = Math.cos(t.angle) * t.radius;
-                t.mesh.rotation.y = -t.angle;
-            });
-
-            // Animate Hostile Cruise Vector
-            hostileTracks.forEach(h => {
-                h.mesh.position.addScaledVector(h.dir, h.speed);
-                if (h.mesh.position.x < -60) h.mesh.position.set(60, 25, -60);
-            });
-
-            drawCopRadar();
-            renderer.render(scene, camera);
-        }
-
-        // Log Helper
-        function addLog(msg, type = 'info') {
-            const list = document.getElementById('c4isrLogList');
-            const now = new Date().toTimeString().split(' ')[0];
-            const div = document.createElement('div');
-            const borderCol = type === 'alert' ? 'border-rose-500' : (type === 'warn' ? 'border-amber-500' : 'border-sky-500');
-            div.className = `p-1 rounded bg-black/40 border-l-2 ${borderCol}`;
-            div.innerHTML = `<span class="text-slate-500">${now}</span> ${msg}`;
-            list.prepend(div);
-            if (list.children.length > 25) list.removeChild(list.lastChild);
-        }
-
-        // UI Event Listeners
-        let isDefcon2 = false;
-        document.getElementById('alertBtn').addEventListener('click', () => {
-            initAudio();
-            isDefcon2 = !isDefcon2;
-            const btn = document.getElementById('alertBtn');
-            const txt = document.getElementById('txtAlert');
-            const defBadge = document.getElementById('telDefcon');
-
-            if (isDefcon2) {
-                btn.className = "px-2.5 py-1 text-xs font-bold rounded bg-rose-600 text-white animate-pulse transition flex items-center space-x-1";
-                txt.innerText = I18N[currentLang].btnResetAlert;
-                defBadge.innerText = I18N[currentLang].defconAlert;
-                defBadge.className = "font-bold text-rose-500";
-                playAlertSound();
-                addLog("[ALERT] DEFCON 2 DECLARED! SAM batteries armed and tracking hostile cruise vector.", "alert");
-            } else {
-                btn.className = "px-2.5 py-1 text-xs font-bold rounded bg-rose-950/80 border border-rose-600/60 hover:bg-rose-900 text-rose-300 transition flex items-center space-x-1";
-                txt.innerText = I18N[currentLang].btnAlert;
-                defBadge.innerText = I18N[currentLang].defconNormal;
-                defBadge.className = "font-bold text-emerald-400";
-                addLog("[C2] Defense condition normalized to DEFCON 4.", "info");
-            }
-        });
-
-        // Intercept Authorization
-        let isEngaged = false;
-        document.getElementById('engageBtn').addEventListener('click', () => {
-            initAudio();
-            playAlertSound();
-            isEngaged = true;
-            const btn = document.getElementById('engageBtn');
-            btn.className = "w-full py-1.5 rounded bg-emerald-600 text-white font-bold text-xs transition flex items-center justify-center space-x-1.5";
-            document.getElementById('txtEngage').innerText = I18N[currentLang].engagedBtn;
-            addLog("[SAM] Patriot PAC-3 Interceptor salvo authorized and fired! Intercept calculated at 42 NM.", "alert");
-        });
-
-        // Domain Filters
-        document.getElementById('filterAllBtn').addEventListener('click', () => {
-            airGroup.visible = true;
-            seaGroup.visible = true;
-            spaceGroup.visible = true;
-            samGroup.visible = true;
-            setActiveFilter('filterAllBtn');
-        });
-        document.getElementById('filterAirBtn').addEventListener('click', () => {
-            airGroup.visible = true;
-            seaGroup.visible = false;
-            spaceGroup.visible = false;
-            samGroup.visible = true;
-            setActiveFilter('filterAirBtn');
-        });
-        document.getElementById('filterSeaBtn').addEventListener('click', () => {
-            airGroup.visible = false;
-            seaGroup.visible = true;
-            spaceGroup.visible = false;
-            samGroup.visible = false;
-            setActiveFilter('filterSeaBtn');
-        });
-        document.getElementById('filterSpaceBtn').addEventListener('click', () => {
-            airGroup.visible = false;
-            seaGroup.visible = false;
-            spaceGroup.visible = true;
-            samGroup.visible = false;
-            setActiveFilter('filterSpaceBtn');
-        });
-
-        function setActiveFilter(id) {
-            ['filterAllBtn', 'filterAirBtn', 'filterSeaBtn', 'filterSpaceBtn'].forEach(b => {
-                const elem = document.getElementById(b);
-                if (b === id) {
-                    elem.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-sky-600 text-white shadow-md shadow-sky-600/30 flex items-center space-x-1.5";
-                } else {
-                    elem.className = "px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-400 hover:text-sky-300 flex items-center space-x-1.5";
-                }
-            });
-        }
-
-        // Camera Reset
-        document.getElementById('resetCamBtn').addEventListener('click', () => {
-            camera.position.set(0, 70, 90);
-            controls.target.set(0, 0, 0);
-        });
-
-        // Sound Toggle
-        document.getElementById('soundBtn').addEventListener('click', () => {
-            initAudio();
-            isAudioMuted = !isAudioMuted;
-            document.getElementById('soundIcon').className = isAudioMuted ? "fa-solid fa-volume-xmark" : "fa-solid fa-volume-high text-sky-400";
-        });
-
-        // Clear Logs
-        document.getElementById('clearLogsBtn').addEventListener('click', () => {
-            document.getElementById('c4isrLogList').innerHTML = '';
-        });
-
-        // Language toggle
-        document.getElementById('langToggleBtn').addEventListener('click', () => {
-            currentLang = currentLang === 'en' ? 'ar' : 'en';
-            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-            document.getElementById('langToggleBtn').innerText = currentLang === 'ar' ? 'English' : 'عربي';
-
-            const t = I18N[currentLang];
-            document.getElementById('subHeaderDesc').innerText = t.subDesc;
-            document.getElementById('telDefcon').innerText = isDefcon2 ? t.defconAlert : t.defconNormal;
-            document.getElementById('txtAlert').innerText = isDefcon2 ? t.btnResetAlert : t.btnAlert;
-            document.getElementById('txtAllDomains').innerText = t.allDomains;
-            document.getElementById('txtAirDomain').innerText = t.airDomain;
-            document.getElementById('txtSeaDomain').innerText = t.seaDomain;
-            document.getElementById('txtSpaceDomain').innerText = t.spaceDomain;
-            document.getElementById('radarTitle').innerText = t.radarTitle;
-            document.getElementById('interceptorTitle').innerText = t.interceptorTitle;
-            document.getElementById('txtEngage').innerText = isEngaged ? t.engagedBtn : t.engageBtn;
-            document.getElementById('eventLogTitle').innerText = t.logTitle;
-        });
-
-        // Init
-        initThree();
-    </script>
+    <!-- Application Entrypoint Module -->
+    <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

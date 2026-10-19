@@ -1,0 +1,70 @@
+name: AegisCommand C4ISR — Multi-Language Verification & Tactical Build Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  typescript-c4isr-suite:
+    name: TypeScript C4ISR Core & Vitest Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: TypeScript Strict Typecheck (WGS84 / Link-16 / JPDA / TEWA)
+        run: npm run typecheck
+
+      - name: Execute Tactical Fusion Unit Tests
+        run: npm test
+
+      - name: Build Production Bundle
+        run: npm run build
+
+  cpp17-ukf-fusion-engine:
+    name: C++17 Unscented Kalman Filter & Track Fusion Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Compile C++17 UKF Ballistic Track Fusion Shared Library
+        run: |
+          mkdir -p cpp_core/build
+          g++ -std=c++17 -O3 -Wall -Wextra -pedantic -fPIC -shared \
+            cpp_core/kalman_track_fusion.cpp \
+            -o cpp_core/build/libkalman_fusion.so
+
+      - name: Compile & Run C++17 Self-Test Harness
+        run: |
+          g++ -std=c++17 -O3 -DAEGIS_STANDALONE_BENCHMARK \
+            cpp_core/kalman_track_fusion.cpp \
+            -o cpp_core/build/ukf_benchmark
+          ./cpp_core/build/ukf_benchmark
+
+  python-cot-sitl-router:
+    name: Python AsyncIO Cursor-on-Target (CoT) & Link-16 SITL Router Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify Syntax & Run Self-Diagnostic Frame Check
+        run: |
+          python -m py_compile python_c2/c4isr_sitl_node.py
+          python python_c2/c4isr_sitl_node.py --self-test

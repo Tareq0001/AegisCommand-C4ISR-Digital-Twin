@@ -1,0 +1,31 @@
+# Build & Dependency Artifacts
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# C++17 Native Build Artifacts
+cpp_core/build/
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# Python SITL Telemetry & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# Logs & Environment
+*.log
+.env
+.env.local
+.DS_Store
+Thumbs.db
